@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload File</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        #uploadButton {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        #loading {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>File Upload</h1>
+
+<label for="fileInput" id="uploadButton">Chọn tệp</label>
+<input type="file" id="fileInput">
+<div id="loading">Đang tải...</div>
+<div id="result"></div>
+
+<script>
+    document.getElementById("fileInput").addEventListener("change", function () {
+        var fileInput = this;
+        var file = fileInput.files[0];
+
+        if (file) {
+            var formData = new FormData();
+            formData.append("file", file);
+
+            // Thay thế 'YOUR_API_KEY' bằng API key của bạn
+            var apiKey = 'U3DJ76X.X6DNA3Q-8TG4C4N-HZW7T1P-2Z9JNK9';
+
+            // Hiển thị tiến trình đang tải
+            document.getElementById("loading").style.display = "block";
+
+            fetch("https://file.io?expires=1w", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").innerHTML = `<p>Tệp đã được tải lên thành công!</p>`;
+                // Ẩn tiến trình đang tải sau khi hoàn thành
+                document.getElementById("loading").style.display = "none";
+                // Thêm đoạn mã để ẩn thông báo sau một khoảng thời gian (ví dụ: 3 giây)
+                setTimeout(function () {
+                    document.getElementById("result").innerHTML = '';
+                }, 3000);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                // Ẩn tiến trình đang tải khi có lỗi
+                document.getElementById("loading").style.display = "none";
+            })
+            .finally(() => {
+                // Đặt giá trị của input file thành null để đảm bảo sự kiện change sẽ kích hoạt nếu chọn cùng một tệp
+                fileInput.value = null;
+            });
+        }
+    });
+</script>
+
+</body>
+</html>
